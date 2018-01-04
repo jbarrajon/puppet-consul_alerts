@@ -1,0 +1,22 @@
+[Unit]
+Description=Consul-Alerts Daemon
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=<%= scope.lookupvar('::consul_alerts::user') %>
+Group=<%= scope.lookupvar('::consul_alerts::group') %>
+ExecStart=<%= scope.lookupvar('::consul_alerts::bin_dir') %>/consul-alerts \
+  start<%- scope.lookupvar('::consul_alerts::final_config_options').each do |key,value| -%> \
+  <%= key -%><% if !value.empty? %>=<%= value %><% end -%>
+<%- end %>
+SuccessExitStatus=12
+ExecReload=/bin/kill -SIGHUP $MAINPID
+ExecStop=/bin/kill -SIGINT $MAINPID
+KillMode=process
+Restart=always
+RestartSec=42s
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
