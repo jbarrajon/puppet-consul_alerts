@@ -32,7 +32,7 @@ class consul_alerts (
 
   $real_download_url = pick($download_url, "${download_url_base}v${version}/consul-alerts-${version}-${os}-${arch}.${download_extension}")
 
-  $final_config_options = hiera_hash('consul_alerts::config_options', $config_options)
+  $final_config_options = lookup('consul_alerts::config_options', { 'value_type' => Hash, 'merge' => 'deep', 'default_value' => $config_options })
 
   include ::consul_alerts::install
   include ::consul_alerts::config
